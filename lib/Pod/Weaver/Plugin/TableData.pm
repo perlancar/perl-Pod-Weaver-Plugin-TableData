@@ -43,13 +43,17 @@ sub _process_module {
         push @pod, " my \$td = $package->new;\n";
         push @pod, "\n";
 
-        push @pod, " # Iterate rows of table\n";
+        push @pod, " # Iterate rows of the table\n";
         push @pod, " \$td->each_row_arrayref(sub { my \$row = shift; ... });\n";
         push @pod, " \$td->each_row_hashref (sub { my \$row = shift; ... });\n";
         push @pod, "\n";
 
         push @pod, " # Get the list of column names\n";
         push @pod, " my \@columns = \$td->get_column_names;\n";
+        push @pod, "\n";
+
+        push @pod, " # Get the number of rows\n";
+        push @pod, " my \$row_count = \$td->get_row_count;\n";
         push @pod, "\n";
 
         push @pod, "See also L<TableDataRole::Spec::Basic> for other methods.\n";
