@@ -27,8 +27,6 @@ sub _md2pod {
 }
 
 sub _process_module {
-    no strict 'refs';
-
     my ($self, $document, $input, $package) = @_;
 
     my $filename = $input->{filename};
@@ -42,11 +40,19 @@ sub _process_module {
     {
         my @pod;
         push @pod, " use $package;\n\n";
-        push @pod, " my \$td = $package->new;\n\n";
+        push @pod, " my \$td = $package->new;\n";
+        push @pod, "\n";
 
         push @pod, " # Iterate rows of table\n";
         push @pod, " \$td->each_row_arrayref(sub { my \$row = shift; ... });\n";
         push @pod, " \$td->each_row_hashref (sub { my \$row = shift; ... });\n";
+        push @pod, "\n";
+
+        push @pod, " # Get the list of column names\n";
+        push @pod, " my \@columns = \$td->get_column_names;\n";
+        push @pod, "\n";
+
+        push @pod, "See also L<TableDataRole::Spec::Basic> for other methods.\n";
         push @pod, "\n";
 
         $self->add_text_to_section(
