@@ -39,6 +39,9 @@ sub _process_module {
   ADD_SYNOPSIS_SECTION:
     {
         my @pod;
+        push @pod, "To use from Perl code:\n";
+        push @pod, "\n";
+
         push @pod, " use $package;\n\n";
         push @pod, " my \$td = $package->new;\n";
         push @pod, "\n";
@@ -57,6 +60,20 @@ sub _process_module {
         push @pod, "\n";
 
         push @pod, "See also L<TableDataRole::Spec::Basic> for other methods.\n";
+        push @pod, "\n";
+
+        push @pod, "To use from command-line (using L<tabledata> CLI):\n";
+        push @pod, "\n";
+
+        push @pod, " # Display as ASCII table and view with pager\n";
+        push @pod, " % tabledata $td_name --page\n";
+        push @pod, "\n";
+
+        push @pod, " # Get number of rows\n";
+        push @pod, " % tabledata --action count_rows $td_name\n";
+        push @pod, "\n";
+
+        push @pod, "See the L<tabledata> CLI's documentation for other available actions and options.\n";
         push @pod, "\n";
 
         $self->add_text_to_section(
