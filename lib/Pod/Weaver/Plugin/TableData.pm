@@ -31,7 +31,7 @@ sub _process_module {
 
     my $filename = $input->{filename};
 
-    $self->require_from_build($input, $package);
+    $self->require_from_build({reload=>1}, $input, $package);
 
     my $td_name = $package;
     $td_name =~ s/\ATableData:://;
@@ -89,10 +89,18 @@ sub _process_module {
     {
         no strict 'refs'; ## no critic: TestingAndDebugging::ProhibitNoStrict
         my @pod;
-        my $no_stats = \%{"$package\::NO_STATS"};
-        last if $no_stats;
+        my $no_stats = ${"$package\::NO_STATS"};
+        if ($no_stats) {
+            $self->log_debug("Package $package sets \$NO_STATS, skip generating TABLEDATA STATISTICS POD section");
+            last;
+        }
         my $stats = \%{"$package\::STATS"};
-        last unless keys %$stats;
+        unless (keys %$stats) {
+            $self->log_debug("Package $package does not define keys in \%STATS, skip generating TABLEDATA STATISTICS POD section");
+            #use Package::MoreUtil; use DDC; dd( Package::MoreUtil::list_package_contents($package) );
+            #use DDC; dd \%INC;
+            last;
+        }
         my $str = Perinci::Result::Format::Lite::format(
             [200,"OK",$stats], "text-pretty");
         $str =~ s/^/ /gm;
