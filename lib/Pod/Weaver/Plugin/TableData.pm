@@ -117,6 +117,41 @@ sub _process_module {
             });
     } # ADD_STATISTICS_SECTION
 
+  ADD_SAMPLE_DATA_SECTION:
+    {
+        no strict 'refs'; ## no critic: TestingAndDebugging::ProhibitNoStrict
+        my @pod;
+
+        # add from examples
+
+        my $no_stats = ${"$package\::NO_STATS"};
+        if ($no_stats) {
+            $self->log_debug("Package $package sets \$NO_STATS, skip generating TABLEDATA STATISTICS POD section");
+            last;
+        }
+        my $stats = \%{"$package\::STATS"};
+        unless (keys %$stats) {
+            $self->log_debug("Package $package does not define keys in \%STATS, skip generating TABLEDATA STATISTICS POD section");
+            #use Package::MoreUtil; use DDC; dd( Package::MoreUtil::list_package_contents($package) );
+            #use DDC; dd \%INC;
+            last;
+        }
+        my $str = Perinci::Result::Format::Lite::format(
+            [200,"OK",$stats], "text-pretty");
+        $str =~ s/^/ /gm;
+        push @pod, $str, "\n";
+
+        push @pod, "The statistics is available in the C<\%STATS> package variable.\n\n";
+
+        $self->add_text_to_section(
+            $document, join("", @pod), 'TABLEDATA STATISTICS',
+            {
+                after_section => ['SYNOPSIS'],
+                before_section => 'DESCRIPTION',
+                ignore => 1,
+            });
+    } # ADD_SAMPLE_DATA_SECTION
+
     $self->log(["Generated POD for '%s'", $filename]);
 }
 
